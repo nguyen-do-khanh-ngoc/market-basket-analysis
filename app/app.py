@@ -12,26 +12,26 @@ st.markdown("Hệ thống AI tự động quét lịch sử giao dịch để t�
 # 2. HÀM TẢI VÀ TIỀN XỬ LÝ DATA
 @st.cache_data(show_spinner="Đang đọc và làm sạch dữ liệu gốc...")
 def load_and_preprocess_data():
+    import os # Khai báo luôn trong này cho chắc ăn
+    
+    # 1. Định vị chính xác chỗ đứng của file
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    
-    # LƯU Ý CHỖ NÀY: Điền chính xác tên file đang nằm trên GitHub của bà
     file_name = 'Coffee Shop Sales.csv' 
-    file_path = os.path.join(current_dir, file_name)
+    file_path = os.path.join(current_dir, file_name) # ĐÂY NÈ! Biến file_path được tạo ra ở đây!
     
-    # Đã đổi encoding thành 'latin1' để khắc phục lỗi bảng mã của Excel Windows
-    # Thêm on_bad_lines='skip' để lơ đi các dòng bị lỗi cấu trúc
+    # 2. Đọc file CSV với bùa chú chống lỗi
     df = pd.read_csv(file_path, sep=';', decimal=',', encoding='latin1', on_bad_lines='skip')
     
-    # Tiền xử lý nhanh
+    # 3. Tiền xử lý nhanh
     df.fillna(df.mean(numeric_only=True), inplace=True)
     df.drop_duplicates(inplace=True)
     
-    # Tạo mã hóa đơn thực tế (Receipt_ID)
+    # 4. Tạo mã hóa đơn thực tế (Receipt_ID)
     df['Receipt_ID'] = (df['store_id'].astype(str) + "_" + 
                         df['transaction_date'].astype(str) + "_" + 
                         df['transaction_time'].astype(str))
     
-    # Tạo ma trận giỏ hàng
+    # 5. Tạo ma trận giỏ hàng
     basket = (df.groupby(['Receipt_ID', 'product_detail'])['transaction_qty']
               .sum().unstack().reset_index().fillna(0).set_index('Receipt_ID'))
     
