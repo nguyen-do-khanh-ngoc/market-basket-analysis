@@ -9,11 +9,18 @@ st.set_page_config(page_title="F&B Cross-Selling Engine", layout="wide")
 st.title("🛒 Hệ Thống Gợi Ý Bán Chéo (Cross-Selling Engine)")
 st.markdown("Hệ thống AI tự động quét lịch sử giao dịch để tìm ra các combo sản phẩm sinh lời.")
 
-# 2. HÀM TẢI VÀ TIỀN XỬ LÝ DATA (Chỉ chạy 1 lần duy nhất nhờ @st.cache_data)
+# 2. HÀM TẢI VÀ TIỀN XỬ LÝ DATA
 @st.cache_data(show_spinner="Đang đọc và làm sạch dữ liệu gốc...")
 def load_and_preprocess_data():
-    # Đọc file CSV 
-    df = pd.read_csv(file_path, sep=';', decimal=',', encoding='utf-8-sig')
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    
+    # LƯU Ý CHỖ NÀY: Điền chính xác tên file đang nằm trên GitHub của bà
+    file_name = 'Coffee Shop Sales.csv' 
+    file_path = os.path.join(current_dir, file_name)
+    
+    # Đã đổi encoding thành 'latin1' để khắc phục lỗi bảng mã của Excel Windows
+    # Thêm on_bad_lines='skip' để lơ đi các dòng bị lỗi cấu trúc
+    df = pd.read_csv(file_path, sep=';', decimal=',', encoding='latin1', on_bad_lines='skip')
     
     # Tiền xử lý nhanh
     df.fillna(df.mean(numeric_only=True), inplace=True)
@@ -30,7 +37,7 @@ def load_and_preprocess_data():
     
     basket_sets = (basket > 0)
     return basket_sets, len(df)
-
+    
 # 3. HÀM CHẠY THUẬT TOÁN APRIORI (Sẽ chạy lại nếu đổi min_support)
 @st.cache_data(show_spinner="AI đang quét tìm quy luật, vui lòng đợi vài giây...")
 def run_apriori_model(basket_sets, min_sup):
