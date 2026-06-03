@@ -95,4 +95,4 @@ try:
         st.error(f"Thuật toán không tìm thấy quy luật nào với mức Min Support là {min_sup_input}. Vui lòng hạ mức này xuống.")
 
 except FileNotFoundError:
-    st.error("⚠️ Không tìm thấy file 'Coffee_Shop_Sales.csv'. Vui lòng kiểm tra lại!")
+    st.error("⚠️ Không tìm thấy file 'Coffee Shop Sales.csv'. Vui lòng kiểm tra lại!")
