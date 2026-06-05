@@ -4,102 +4,118 @@ from mlxtend.frequent_patterns import apriori, association_rules
 import warnings
 warnings.filterwarnings('ignore')
 
-# 1. Cài đặt giao diện
+# 1. Page Configuration (Bắt buộc phải nằm trên cùng)
 st.set_page_config(page_title="F&B Cross-Selling Engine", layout="wide")
-st.title("🛒 Hệ Thống Gợi Ý Bán Chéo (Cross-Selling Engine)")
-st.markdown("Hệ thống AI tự động quét lịch sử giao dịch để tìm ra các combo sản phẩm sinh lời.")
 
-# 2. HÀM TẢI VÀ TIỀN XỬ LÝ DATA
-@st.cache_data(show_spinner="Đang đọc và làm sạch dữ liệu gốc...")
-def load_and_preprocess_data():
-    import os # Khai báo luôn trong này cho chắc ăn
+# ==========================================
+# CÀI ĐẶT FONT MONTSERRAT & FONT AWESOME
+# ==========================================
+st.markdown("""
+    <style>
+    /* Import Font Montserrat từ Google Fonts */
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap');
     
-    # 1. Định vị chính xác chỗ đứng của file
+    /* Import FontAwesome Icons */
+    @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
+
+    /* Ép toàn bộ web xài font Montserrat */
+    html, body, [class*="css"]  {
+        font-family: 'Montserrat', sans-serif !important;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+# 2. GIAO DIỆN HEADER (Dùng HTML để chèn icon FontAwesome)
+st.markdown("<h1><i class='fa-solid fa-cart-arrow-down'></i> Cross-Selling Recommendation Engine</h1>", unsafe_allow_html=True)
+st.markdown("<p><i class='fa-solid fa-microchip'></i> AI system automatically scans transaction history to find profitable product combos.</p>", unsafe_allow_html=True)
+
+# 3. DATA LOADING & PREPROCESSING
+@st.cache_data(show_spinner="Reading and cleaning raw data...")
+def load_and_preprocess_data():
+    import os 
+    
     current_dir = os.path.dirname(os.path.abspath(__file__))
     file_name = 'Coffee Shop Sales.csv' 
-    file_path = os.path.join(current_dir, file_name) # ĐÂY NÈ! Biến file_path được tạo ra ở đây!
+    # Nhớ đổi lại đường dẫn nếu bà đã cho file này vô thư mục data/processed nha
+    file_path = os.path.join(current_dir, file_name) 
     
-    # 2. Đọc file CSV với bùa chú chống lỗi
     df = pd.read_csv(file_path, sep=';', decimal=',', encoding='latin1', on_bad_lines='skip')
     
-    # 3. Tiền xử lý nhanh
     df.fillna(df.mean(numeric_only=True), inplace=True)
     df.drop_duplicates(inplace=True)
     
-    # 4. Tạo mã hóa đơn thực tế (Receipt_ID)
     df['Receipt_ID'] = (df['store_id'].astype(str) + "_" + 
                         df['transaction_date'].astype(str) + "_" + 
                         df['transaction_time'].astype(str))
     
-    # 5. Tạo ma trận giỏ hàng
     basket = (df.groupby(['Receipt_ID', 'product_detail'])['transaction_qty']
               .sum().unstack().reset_index().fillna(0).set_index('Receipt_ID'))
     
     basket_sets = (basket > 0)
     return basket_sets, len(df)
     
-# 3. HÀM CHẠY THUẬT TOÁN APRIORI (Sẽ chạy lại nếu đổi min_support)
-@st.cache_data(show_spinner="AI đang quét tìm quy luật, vui lòng đợi vài giây...")
+# 4. RUN APRIORI ALGORITHM
+@st.cache_data(show_spinner="AI is scanning for patterns, please wait...")
 def run_apriori_model(basket_sets, min_sup):
     frequent_itemsets = apriori(basket_sets, min_support=min_sup, use_colnames=True)
     if frequent_itemsets.empty:
-        return pd.DataFrame() # Trả về bảng rỗng nếu không tìm thấy
+        return pd.DataFrame() 
         
     rules = association_rules(frequent_itemsets, metric="lift", min_threshold=1.0)
     if rules.empty:
         return pd.DataFrame()
 
-    # Xử lý format
-    rules['Sản phẩm chính (Mua)'] = rules['antecedents'].apply(lambda x: ', '.join(list(x)))
-    rules['Sản phẩm mua kèm'] = rules['consequents'].apply(lambda x: ', '.join(list(x)))
+    # Dịch sang Tiếng Anh
+    rules['Primary Product (Buy)'] = rules['antecedents'].apply(lambda x: ', '.join(list(x)))
+    rules['Bought With'] = rules['consequents'].apply(lambda x: ', '.join(list(x)))
     rules['Support (%)'] = round(rules['support'] * 100, 3)
     rules['Confidence (%)'] = round(rules['confidence'] * 100, 2)
     rules['Lift'] = round(rules['lift'], 2)
     
-    rules_final = rules[['Sản phẩm chính (Mua)', 'Sản phẩm mua kèm', 'Support (%)', 'Confidence (%)', 'Lift']]
+    rules_final = rules[['Primary Product (Buy)', 'Bought With', 'Support (%)', 'Confidence (%)', 'Lift']]
     return rules_final.sort_values(by='Lift', ascending=False).reset_index(drop=True)
 
 # ==========================================
-# GIAO DIỆN CHÍNH CỦA APP
+# MAIN APP INTERFACE
 # ==========================================
 try:
-    # Gọi hàm tải data
     basket_sets, total_rows = load_and_preprocess_data()
     
-    st.sidebar.header("⚙️ 1. Cấu hình AI (Thuật toán)")
-    st.sidebar.markdown("*(Lưu ý: Thay đổi thông số này AI sẽ tốn vài giây để tính toán lại toàn bộ)*")
-    # Cho phép sếp tự chỉnh min_support từ 0.001 (0.1%) đến 0.05 (5%)
-    min_sup_input = st.sidebar.slider("Độ phủ tối thiểu (Min Support)", 0.001, 0.050, 0.001, step=0.001, format="%.3f")
+    # Sidebar
+    st.sidebar.markdown("### <i class='fa-solid fa-gears'></i> 1. AI Configuration", unsafe_allow_html=True)
+    st.sidebar.markdown("*(Note: Changing this will cause the AI to recalculate)*")
+    min_sup_input = st.sidebar.slider("Minimum Support", 0.001, 0.050, 0.001, step=0.001, format="%.3f")
     
-    # Chạy mô hình
     df_rules = run_apriori_model(basket_sets, min_sup_input)
     
     st.sidebar.divider()
     
-    st.sidebar.header("🎯 2. Lọc Kết Quả (Hiển thị)")
-    # Các thanh trượt này chỉ lọc bảng hiển thị nên sẽ chạy ngay lập tức (không tốn thời gian load)
+    st.sidebar.markdown("### <i class='fa-solid fa-filter'></i> 2. Result Filters", unsafe_allow_html=True)
+    
     if not df_rules.empty:
         max_lift = float(df_rules['Lift'].max())
-        min_confidence = st.sidebar.slider("Độ tin cậy (Confidence %)", 0.0, 100.0, 10.0, step=5.0)
-        min_lift = st.sidebar.slider("Độ nâng cao (Lift)", 1.0, max_lift, 1.2, step=0.1)
+        min_confidence = st.sidebar.slider("Minimum Confidence (%)", 0.0, 100.0, 10.0, step=5.0)
+        min_lift = st.sidebar.slider("Minimum Lift", 1.0, max_lift, 1.2, step=0.1)
         
-        # Lọc dataframe
         filtered_df = df_rules[(df_rules['Confidence (%)'] >= min_confidence) & (df_rules['Lift'] >= min_lift)]
         
-        # Hiển thị KPI
-        st.subheader("📊 Tổng quan hệ thống")
+        # KPIs
+        st.markdown("### <i class='fa-solid fa-chart-pie'></i> System Overview", unsafe_allow_html=True)
         col1, col2, col3 = st.columns(3)
-        col1.metric("Tổng dòng dữ liệu gốc", f"{total_rows:,}")
-        col2.metric("Quy luật tìm thấy (Thỏa điều kiện)", len(filtered_df))
-        col3.metric("Combo có sức hút cao nhất (Max Lift)", f"{filtered_df['Lift'].max() if not filtered_df.empty else 0}")
+        col1.metric("Total Raw Transactions", f"{total_rows:,}")
+        col2.metric("Rules Found (Filtered)", len(filtered_df))
+        col3.metric("Max Lift (Highest Synergy)", f"{filtered_df['Lift'].max() if not filtered_df.empty else 0}")
 
-        st.markdown("### 🏆 Bảng Xếp Hạng Cặp Sản Phẩm Tiềm Năng")
+        # Main Table
+        st.markdown("### <i class='fa-solid fa-trophy'></i> Top Potential Product Combos", unsafe_allow_html=True)
         if not filtered_df.empty:
-            st.dataframe(filtered_df.style.highlight_max(axis=0, color='#90EE90'), use_container_width=True)
+            # Highlight max values bằng màu xanh nhạt (#ADD8E6)
+            st.dataframe(filtered_df.style.highlight_max(axis=0, color='#ADD8E6'), use_container_width=True)
         else:
-            st.warning("Không có quy luật nào vượt qua bộ lọc hiển thị. Hãy thử hạ Confidence hoặc Lift xuống!")
+            st.warning("No rules passed the display filters. Try lowering Confidence or Lift!")
     else:
-        st.error(f"Thuật toán không tìm thấy quy luật nào với mức Min Support là {min_sup_input}. Vui lòng hạ mức này xuống.")
+        st.error(f"Algorithm found no rules with Min Support at {min_sup_input}. Please lower this value.")
 
 except FileNotFoundError:
-    st.error("⚠️ Không tìm thấy file 'Coffee Shop Sales.csv'. Vui lòng kiểm tra lại!")
+    # Báo lỗi chuyên nghiệp kèm icon
+    st.markdown("<p style='color:red;'><i class='fa-solid fa-triangle-exclamation'></i> File 'Coffee Shop Sales.csv' not found. Please check your file path!</p>", unsafe_allow_html=True)
