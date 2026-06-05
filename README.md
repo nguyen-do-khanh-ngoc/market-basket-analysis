@@ -69,7 +69,7 @@ Từ các nhận xét trên, nhóm có một số đề xuất để giúp quán
 
 ## 6. Hướng Dẫn Đọc Thư Mục Dự Án
 
-- 📂 **`dashboards/`**: Chứa file Power BI (`.pbix` và `.pdf`) báo cáo doanh thu tổng quan.
+- 📂 **`dashboards/`**: Chứa file Power BI (`.pbix` và `.md`) báo cáo doanh thu tổng quan.
 - 📂 **`notebooks/`**: Chứa 2 file Jupyter Notebook (`.ipynb`) thể hiện quá trình dọn dẹp dữ liệu (EDA) và code thuật toán.
 - 🌐 **`app.py`**: Chứa code giao diện Streamlit của Web App.
 - 📂 **`data/`**: Chứa dữ liệu gốc và dữ liệu đã qua xử lý.
