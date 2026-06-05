@@ -47,6 +47,6 @@ Từ những Insights trên, đề xuất các chiến lược hành động sau
 
 Bên cạnh các chỉ số tổng quan, dự án còn đi sâu vào việc tìm ra mối liên hệ ẩn giữa các sản phẩm khách hàng thường mua chung trong cùng một hóa đơn (Sử dụng thuật toán Apriori).
 
-* Chi tiết về các chỉ số *Support, Confidence, Lift* và bảng quy luật Cross-Selling mạnh nhất được trình bày cụ thể tại file báo cáo mã nguồn: `02_association_rule.ipynb` và trang Dashboard Phân tích Combo.
+* Chi tiết về các chỉ số *Support, Confidence, Lift* và bảng quy luật Cross-Selling mạnh nhất được trình bày cụ thể tại file báo cáo mã nguồn: `02_association_rule.ipynb`.
 
 ---
