@@ -93,6 +93,7 @@ In addition to overall business performance metrics, the project further explore
 ## Key Takeaway
 
 The analysis reveals that the coffee shop maintains stable revenue growth, experiences strong morning customer demand, and has several high-performing products that can be leveraged for cross-selling opportunities. By implementing targeted promotional campaigns, optimizing staffing during peak hours, and utilizing association rule insights, the business can further increase revenue and enhance customer satisfaction.
+
 ---
 #  Phân Tích Dữ Liệu Bán Hàng Quán Cafe & Đề Xuất Chiến Lược (Coffee Shop Sales Analysis) Trích Từ file pbix (Power BI đã tạo)
 
