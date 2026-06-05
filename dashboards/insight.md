@@ -1,8 +1,4 @@
-#  Phân Tích Dữ Liệu Bán Hàng Quán Cafe & Đề Xuất Chiến Lược (Coffee Shop Sales Analysis)
-
-Dự án này tập trung khai thác bộ dữ liệu giao dịch của hệ thống quán cafe gồm 3 chi nhánh trong 6 tháng đầu năm 2023. Thông qua việc làm sạch dữ liệu, trực quan hóa trên Power BI và áp dụng thuật toán học máy (Apriori), dự án nhằm mục đích hiểu rõ hành vi khách hàng và đưa ra các quyết định kinh doanh dựa trên dữ liệu (Data-driven decisions).
-
----
+#  Phân Tích Dữ Liệu Bán Hàng Quán Cafe & Đề Xuất Chiến Lược (Coffee Shop Sales Analysis) Trích Từ file pbix (Power BI đã tạo)
 
 ##  1. Phân Tích Tổng Quan Doanh Thu (Sales Performance)
 
