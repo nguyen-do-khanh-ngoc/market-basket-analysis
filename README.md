@@ -21,7 +21,7 @@ Dự án bao gồm 2 sản phẩm thực tế:
 
 ### 📊 B. Dashboard Power BI: Báo Cáo Doanh Thu
 Dashboard trực quan giúp theo dõi doanh thu theo thời gian, chi nhánh và các khung giờ đông khách.
-👉 **[Xem nhanh bản báo cáo PDF tại đây]([dashboards/03_coffee_sales_dashboard.pdf](https://github.com/nguyen-do-khanh-ngoc/market-basket-analysis/blob/main/dashboards/insight.md))** *(Hoặc tải file `.pbix` trong thư mục `dashboards/` để xem bản đầy đủ).*
+👉 **[[Xem nhanh bản báo cáo PDF tại đây](https://github.com/nguyen-do-khanh-ngoc/market-basket-analysis/blob/main/dashboards/insight.md)]** *(Hoặc tải file `.pbix` trong thư mục `dashboards/` để xem bản đầy đủ).*
 
 ---
 
