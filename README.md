@@ -17,7 +17,7 @@ Dự án bao gồm 2 sản phẩm thực tế:
 
 ### 🌐 A. Web App: Công Cụ Gợi Ý Bán Chéo
 Được viết bằng Streamlit, giúp người dùng tự chỉnh các thông số (Support, Confidence, Lift) để tìm ra các cặp sản phẩm bán chung tốt nhất theo thuật toán AI.
-👉 **[Trải nghiệm Web App tại đây] (BÀ NHỚ DÁN LINK STREAMLIT VÀO ĐÂY NHA)**
+👉 **[[Trải nghiệm Web App tại đây](https://market-basket-analysis-ez3n3wzqje8wuozunstt8o.streamlit.app/)]**
 
 ### 📊 B. Dashboard Power BI: Báo Cáo Doanh Thu
 Dashboard trực quan giúp theo dõi doanh thu theo thời gian, chi nhánh và các khung giờ đông khách.
